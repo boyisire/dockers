@@ -1,0 +1,36 @@
+FROM php:7.1-fpm
+
+MAINTAINER dayer "zhudaye@3laoshi.com"
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Update packages
+RUN apt-get update
+
+# Install PHP and composer dependencies
+RUN apt-get install -qq git curl libmcrypt-dev libjpeg-dev libpng-dev libfreetype6-dev libbz2-dev
+
+# Clear out the local repository of retrieved package files
+# RUN apt-get clean
+
+# Install needed extensions
+# Here you can install any other extension that you need during the test and deployment process
+RUN apt-get clean; docker-php-ext-install pdo pdo_mysql mcrypt zip gd pcntl opcache bcmath
+
+# 安装 Composer
+ENV COMPOSER_HOME /root/composer
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
+
+#WORKDIR /Users/daye/Docker/app/wwwroot
+
+RUN groupadd -r nxops && useradd -r -g nxops  nxops
+USER nxops
+
+# Write Permission
+RUN usermod -u 1000 www-data
+
+#CMD php-fpm

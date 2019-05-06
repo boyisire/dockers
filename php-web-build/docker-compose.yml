@@ -1,0 +1,63 @@
+version: '3'
+services:
+  php-fpm:
+    build: 
+      context: .
+      dockerfile: dockerfile.php
+    links:
+      - mysql-db:mysql-db
+      - redis-db:redis-db
+    ports:
+      - "9000:9000"
+    working_dir: /data/www
+    volumes:
+      - ./wwwroot:/data/www:rw
+      - ./logs/php-fpm:/var/log/php-fpm:rw
+    restart: always
+    command: php-fpm
+
+  nginx:
+    build: 
+        context: .
+        dockerfile: dockerfile.nginx
+    depends_on:
+      - php-fpm
+    links:
+      - php-fpm:php-fpm
+    volumes:
+      - ./wwwroot:/data/www:rw
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    restart: always
+    command: nginx -g 'daemon off;'
+  mysql-db:
+      build: 
+        context: .
+        dockerfile: dockerfile.mysql
+      ports:
+        - "3306:3306"
+      volumes:
+        - ./data/mysql:/var/lib/mysql:rw
+        - ./logs/mysql:/var/lib/mysql-logs:rw
+      environment:
+        MYSQL_ROOT_PASSWORD: testtest
+        MYSQL_DATABASE: jzh-local
+        MYSQL_USER: webadmin
+        MYSQL_PASSWORD: webadmin
+      restart: always
+      command: "--character-set-server=utf8"
+
+  redis-db:
+      build:
+        context: .
+        dockerfile: dockerfile.redis
+      ports:
+        - "6379:6379"
+      volumes:
+        - ./data/redis:/data
+      restart: always
+
