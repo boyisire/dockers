@@ -1,4 +1,5 @@
 ## 目录结构说明
+```
 ├── docker-compose.yml          容器启动配置文件
 ├── dockerfiles                 构建配置文件目录
 ├── conf                        配置目录
@@ -21,10 +22,9 @@
 │   └── php-fpm                 PHP-FPM日志目录
 ├── data                        数据文件相关(Mysql数据文件、Redis数据文件)
 └── wwwroot                     站点根目录
+```
 
-
-## 私有仓库操作
-
+## 私有仓库操作命令
 ### 构建文件内容<./dockerfiles/nginx>
 ```
 FROM nginx:1.15
@@ -54,3 +54,12 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ### 从远端私有仓库拉取镜像文件到本地
 `docker pull 127.0.0.1:5000/nginx-1.15:zdy`
+
+## 项目启动命令
+`docker-compose up -d`
+
+
+## 参考资料
+[用 Docker 搭建 Laravel 开发环境](https://learnku.com/articles/24862)
+[徒手用 Docker 构建自己的 PHP 开发环境](https://www.goozp.com/article/77.html)
+[Docker — 从入门到实践](https://legacy.gitbook.com/book/yeasy/docker_practice/details)
